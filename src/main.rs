@@ -1,36 +1,53 @@
+mod config;
+mod mem;
+
+use anyhow::{Context, Result};
+use clap::Parser;
 use memflow::prelude::v1::*;
-use memflow::plugins::Inventory;
-use memflow_win32::prelude::v1::*;
+use std::path::PathBuf;
+use std::thread;
+use std::time::Duration;
+
+#[derive(Parser, Debug)]
+#[command(name = "kvm_mem_test", version, about = "KVM 内存读取测试")]
+struct Cli {
+    /// 配置文件路径
+    #[arg(short, long, default_value = "offsets.toml")]
+    config: PathBuf,
+}
 
 fn main() -> Result<()> {
-    // 1. 初始化 memflow 插件管理器（自动扫描 memflowup 安装的连接器）
-    let inventory = Inventory::new()?;
+    let cli = Cli::parse();
+    let cfg = config::Config::load(&cli.config)?;
 
-    // 2. 创建 KVM 连接器
-    let connector = inventory.create_connector("kvm", &ConnectorArgs::default())?;
+    println!("[*] 目标进程: {}", cfg.target.process_name);
+    println!("[*] 目标模块: {}", cfg.target.module_name);
 
-    // 3. 初始化 Win32 内核抽象
-    let mut kernel = Win32Kernel::builder(connector)
-        .build_default_caches()
-        .build()?;
+    // 1. 初始化 KVM + Win32
+    let mut kernel = mem::init_kernel()?;
 
-    // 4. 列出前 10 个进程，确认连接正常
-    println!("=== 进程列表（前10个） ===");
-    let process_list = kernel.process_info_list()?;
-    for p in process_list.iter().take(10) {
-        println!("PID: {:<6} 名称: {}", p.pid, p.name);
+    // 2. 附加到目标进程
+    let mut process = mem::attach(&mut kernel, &cfg.target.process_name)?;
+
+    // 3. 获取模块基址
+    let module = process
+        .module_by_name(&cfg.target.module_name)
+        .with_context(|| format!("找不到模块 {}", cfg.target.module_name))?;
+    let base = module.base;
+    println!("[+] 模块基址: {:x}", base);
+
+    // 4. 计算实际地址（模块基址 + 偏移）
+    let secret_addr  = Address::from(base.to_umem() + cfg.offsets.secret_value()?);
+    let counter_addr = Address::from(base.to_umem() + cfg.offsets.counter()?);
+    println!("[+] secret_value 地址: {:x}", secret_addr);
+    println!("[+] counter 地址:      {:x}", counter_addr);
+
+    // 5. 循环读取
+    println!("\n[*] 开始读取，Ctrl+C 退出\n");
+    loop {
+        let secret:  i32 = process.read(secret_addr)?;
+        let counter: i32 = process.read(counter_addr)?;
+        println!("secret_value = {:<8} counter = {}", secret, counter);
+        thread::sleep(Duration::from_secs(1));
     }
-
-    // 5. 附加到你的测试进程（请替换为实际进程名）
-    let target_process_name = "test_target.exe";
-    let mut process = kernel.process(target_process_name)?;
-    println!("\n已附加到进程: {}", target_process_name);
-
-    // 6. 读取一个已知地址的 i32 值（请替换为你测试程序中的实际地址）
-    //    这个地址可以通过 Cheat Engine 或你自己在测试程序中打印得到
-    let target_address = Address::from(0x00007FF6_12345678u64);
-    let value: i32 = process.read(target_address)?;
-    println!("读取地址 {:x} 的值: {}", target_address, value);
-
-    Ok(())
 }
