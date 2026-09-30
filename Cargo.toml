@@ -1,0 +1,8 @@
+[package]
+name = "kvm_mem_test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+memflow = "0.2"
+memflow-win32 = "0.2"
