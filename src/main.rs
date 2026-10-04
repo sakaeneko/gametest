@@ -16,14 +16,17 @@ fn main() -> Result<()> {
 
     let mut inventory = Inventory::scan();
 
-    // qemu 连接器 + QMP socket
-    let mut args = ConnectorArgs::default();
-    args.target = Some("unix:/tmp/qmp-win10.sock".into());
-    let connector = inventory.instantiate_connector(
-        "qemu",
-        None,
-        Some(&args),
-    )?;
+    // 诊断：扫到了什么插件
+    println!("[RiliS] connector 插件列表:");
+    for info in inventory.available_connectors() {
+        println!("    {:?}", info);
+    }
+    println!("[RiliS] os 插件列表:");
+    for info in inventory.available_os() {
+        println!("    {:?}", info);
+    }
+
+    let connector = inventory.instantiate_connector("qemu", None, None)?;
     println!("[RiliS] 线已接 (qemu)");
 
     let mut kernel = Win32Kernel::builder(connector)
