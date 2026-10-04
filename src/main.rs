@@ -1,3 +1,10 @@
+mod config;
+mod offsets;
+mod translation;
+mod data;
+mod projection;
+mod output;
+
 use memflow::prelude::v1::*;
 use memflow_win32::prelude::v1::*;
 use std::time::Duration;
@@ -7,8 +14,13 @@ fn main() -> Result<()> {
     let cfg = Config::default();
     println!("[RiliS] 线上电...");
 
+    // 用 Inventory 创建 connector
     let inventory = Inventory::scan();
-    let connector = inventory.create_connector("kvm", "")?;
+    let connector = inventory.create_connector(
+        "kvm",
+        None,
+        None,
+    )?;
     println!("[RiliS] 线已接");
 
     let kernel = Win32Kernel::builder(connector)
@@ -17,7 +29,7 @@ fn main() -> Result<()> {
     println!("[RiliS] 客户机 OS 层已加载");
 
     println!("[RiliS] 找进程: {}", cfg.process_name);
-    let mut process = kernel.process(cfg.process_name)?;
+    let mut process = kernel.process_by_name(cfg.process_name)?;
     let module = process.module_by_name(cfg.process_name)?;
     let base = module.base();
     println!("[RiliS] 基址: 0x{:X}", base);
