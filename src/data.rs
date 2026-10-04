@@ -1,5 +1,4 @@
 use memflow::prelude::v1::*;
-use memflow_win32::prelude::v1::*;
 use crate::offsets::offsets;
 use crate::translation::decode_position;
 
@@ -23,7 +22,7 @@ pub struct EspFrame {
 }
 
 pub fn read_frame(
-    process: &mut Win32Process,
+    process: &mut impl MemoryView,
     base: Address,
     max_actors: u32,
 ) -> Option<EspFrame> {
