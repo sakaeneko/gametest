@@ -15,15 +15,15 @@ fn main() -> Result<()> {
     println!("[RiliS] 线上电...");
 
     // 用 Inventory 创建 connector
-    let inventory = Inventory::scan();
-    let connector = inventory.create_connector(
+    let mut inventory = Inventory::scan();
+    let connector = inventory.instantiate_connector(
         "kvm",
         None,
         None,
     )?;
     println!("[RiliS] 线已接");
 
-    let kernel = Win32Kernel::builder(connector)
+    let mut kernel = Win32Kernel::builder(connector)
         .build_default_caches()
         .build()?;
     println!("[RiliS] 客户机 OS 层已加载");
