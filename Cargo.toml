@@ -5,9 +5,8 @@ edition = "2021"
 
 [dependencies]
 memflow = "0.2.4"
-memflow-win32 = { version = "0.2.0-beta11", features = ["plugins"] }
-memflow-kvm = "0.2.0-beta10"
-dataview = "1.1.0"
+memflow-win32 = { version = "0.2.0", features = ["plugins"] }
+memflow-kvm = "0.2.0"
 
 [profile.release]
 opt-level = 3
