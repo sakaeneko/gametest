@@ -14,25 +14,21 @@ fn main() -> Result<()> {
     let cfg = Config::default();
     println!("[RiliS] 线上电...");
 
-    // 1. 用 Inventory 动态加载 connector
-    let mut inventory = Inventory::scan();
-    let connector = inventory.create_connector("kvm", "")?;
+    // 单路：只走 kvm
+    let connector = ConnectorArgs::parse("kvm").create_connector()?;
     println!("[RiliS] 线已接");
 
-    // 2. win32 kernel
     let kernel = Win32Kernel::builder(connector)
         .build_default_caches()
         .build()?;
     println!("[RiliS] 客户机 OS 层已加载");
 
-    // 3. 找进程
     println!("[RiliS] 找进程: {}", cfg.process_name);
     let mut process = kernel.process(cfg.process_name)?;
     let module = process.module_by_name(cfg.process_name)?;
     let base = module.base();
     println!("[RiliS] 基址: 0x{:X}", base);
 
-    // 4. 主循环
     loop {
         match data::read_frame(&mut process, base, cfg.max_actors) {
             Some(mut frame) => {
