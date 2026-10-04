@@ -15,10 +15,15 @@ fn main() -> Result<()> {
     println!("[RiliS] 线上电...");
 
     let mut inventory = Inventory::scan();
-    let connector = inventory.instantiate_connector("qemu", None, None)?;
-    println!("[RiliS] 线已接 (qemu)");
 
-    // builder 自动处理 win32 OS 层扫描和初始化
+    // qemu 连接器 + QMP socket
+    let connector = inventory.instantiate_connector(
+        "qemu",
+        Some("unix:/tmp/qmp-win10.sock"),
+        None,
+    )?;
+    println!("[RiliS] 线已接 (qemu + qmp)");
+
     let mut kernel = Win32Kernel::builder(connector)
         .build_default_caches()
         .build()?;
