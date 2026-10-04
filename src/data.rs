@@ -23,7 +23,7 @@ pub struct EspFrame {
 }
 
 pub fn read_frame(
-    process: &mut IntoProcessInstance,
+    process: &mut Win32Process,
     base: Address,
     max_actors: u32,
 ) -> Option<EspFrame> {
@@ -81,7 +81,6 @@ pub fn read_frame(
             .unwrap_or(255);
         if team == local_team { continue; }
 
-        // 读原始坐标字节 → 翻译层
         let mut raw = [0u8; 12];
         for k in 0..12 {
             raw[k] = process
@@ -94,7 +93,6 @@ pub fn read_frame(
             .read(actor + offsets::ENTITY_ARMOR)
             .unwrap_or(0);
 
-        // 武器名：UE4 FName → 需要 GNames 表解析 [坑]
         let weapon_name = String::from("?");
 
         entities.push(EntityData {
