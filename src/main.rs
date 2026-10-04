@@ -1,10 +1,3 @@
-mod config;
-mod offsets;
-mod translation;
-mod data;
-mod projection;
-mod output;
-
 use memflow::prelude::v1::*;
 use memflow_win32::prelude::v1::*;
 use std::time::Duration;
@@ -14,8 +7,9 @@ fn main() -> Result<()> {
     let cfg = Config::default();
     println!("[RiliS] 线上电...");
 
-    // 单路：只走 kvm
-    let connector = ConnectorArgs::parse("kvm").create_connector()?;
+    // 用 Inventory 创建 connector
+    let inventory = Inventory::scan();
+    let connector = inventory.create_connector("kvm", "")?;
     println!("[RiliS] 线已接");
 
     let kernel = Win32Kernel::builder(connector)
