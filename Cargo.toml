@@ -6,7 +6,6 @@ edition = "2021"
 [dependencies]
 memflow = "0.2.4"
 memflow-win32 = { version = "0.2.0", features = ["plugins"] }
-memflow-qemu = "0.2.0-beta10"
 
 [profile.release]
 opt-level = 3
