@@ -1,8 +1,0 @@
-[target]
-process_name = "test_target.exe"
-module_name  = "test_target.exe"
-
-[offsets]
-# 这里填“相对于模块基址”的偏移（十六进制字符串）
-secret_value = "0x12345678"
-counter      = "0x12345680"
