@@ -7,7 +7,6 @@ fn main() -> Result<()> {
     let cfg = Config::default();
     println!("[RiliS] 线上电...");
 
-    // 用 Inventory 创建 connector
     let inventory = Inventory::scan();
     let connector = inventory.create_connector("kvm", "")?;
     println!("[RiliS] 线已接");
