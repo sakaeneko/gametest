@@ -9,9 +9,6 @@ memflow-win32 = { version = "0.2.0-beta11", features = ["plugins"] }
 memflow-kvm = "0.2.0-beta10"
 dataview = "1.1.0"
 
-[patch.crates-io]
-dataview = { version = "1.1.0" }
-
 [profile.release]
 opt-level = 3
 lto = true
