@@ -65,7 +65,7 @@ pub fn read_frame(
             _ => continue,
         };
 
-        let dormant: bool = process
+        let dormant: u8 = process
             .read(actor + offsets::ENTITY_DORMANT)
             .unwrap_or(true);
         if dormant { continue; }
