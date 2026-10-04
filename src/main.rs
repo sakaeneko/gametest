@@ -14,7 +14,7 @@ fn main() -> Result<()> {
     let cfg = Config::default();
     println!("[RiliS] 线上电...");
 
-    // qemu 连接器：走 procfs + ptrace，不碰内核模块，不配 QMP
+    // 扫描程序所在目录，加载旁边的 .so
     let mut inventory = Inventory::scan();
     let connector = inventory.instantiate_connector(
         "qemu",
