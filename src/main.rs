@@ -14,14 +14,14 @@ fn main() -> Result<()> {
     let cfg = Config::default();
     println!("[RiliS] 线上电...");
 
-    // 用 Inventory 创建 connector
+    // qemu 连接器：走 procfs + ptrace，不碰内核模块，不配 QMP
     let mut inventory = Inventory::scan();
     let connector = inventory.instantiate_connector(
-        "kvm",
+        "qemu",
         None,
         None,
     )?;
-    println!("[RiliS] 线已接");
+    println!("[RiliS] 线已接 (qemu)");
 
     let mut kernel = Win32Kernel::builder(connector)
         .build_default_caches()
