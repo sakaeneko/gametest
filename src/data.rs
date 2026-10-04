@@ -37,22 +37,22 @@ pub fn read_frame(
     }
 
     // 2. GWorld → Level
-    let gworld_ptr: Address = process.read(base + offsets::GWORLD).ok()?;
+    let gworld_ptr: Address = process.read_addr(base + offsets::GWORLD).ok()?;
     if gworld_ptr.is_null() { return None; }
-    let gworld: Address = process.read(gworld_ptr).ok()?;
+    let gworld: Address = process.read_addr(gworld_ptr).ok()?;
     if gworld.is_null() { return None; }
-    let level: Address = process.read(gworld + offsets::PERSISTENT_LEVEL).ok()?;
+    let level: Address = process.read_addr(gworld + offsets::PERSISTENT_LEVEL).ok()?;
     if level.is_null() { return None; }
 
     // 3. Actors 数组
-    let actors_data: Address = process.read(level + offsets::ACTORS_ARRAY).ok()?;
+    let actors_data: Address = process.read_addr(level + offsets::ACTORS_ARRAY).ok()?;
     let actors_count: u32 = process.read(
         level + offsets::ACTORS_ARRAY + offsets::ACTORS_COUNT_OFF
     ).ok()?;
     let count = actors_count.min(max_actors);
 
     // 4. 本地玩家
-    let local_pawn: Address = process.read(base + offsets::LOCAL_PLAYER).ok()?;
+    let local_pawn: Address = process.read_addr(base + offsets::LOCAL_PLAYER).ok()?;
     let local_team: u8 = process
         .read(local_pawn + offsets::ENTITY_TEAM)
         .unwrap_or(0);
@@ -60,7 +60,7 @@ pub fn read_frame(
     // 5. 遍历 Actor
     let mut entities = Vec::with_capacity(count as usize);
     for i in 0..count {
-        let actor: Address = match process.read(actors_data + i as u64 * 8) {
+        let actor: Address = match process.read_addr(actors_data + i as u64 * 8) {
             Ok(a) if !a.is_null() => a,
             _ => continue,
         };
