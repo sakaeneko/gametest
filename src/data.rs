@@ -65,10 +65,10 @@ pub fn read_frame(
             _ => continue,
         };
 
-        let dormant: u8 = process
+        let dormant_raw: u8 = process
             .read(actor + offsets::ENTITY_DORMANT)
-            .unwrap_or(true);
-        if dormant { continue; }
+            .unwrap_or(1);
+        if dormant_raw != 0 { continue; }
 
         let health: i32 = process
             .read(actor + offsets::ENTITY_HEALTH)
