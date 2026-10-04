@@ -10,9 +10,9 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            process_name: "五字进程名.exe", // 坑
-            screen_w: 2560.0,
-            screen_h: 1440.0,
+            process_name: "DeltaForceClient-Win64-Shipping.exe",
+            screen_w: 1920.0,
+            screen_h: 1080.0,
             tick_ms: 16,
             max_actors: 2000,
         }
