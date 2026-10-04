@@ -1,4 +1,4 @@
-// 运行时配置 —— 坑，家底看完填
+// 运行时配置
 pub struct Config {
     pub process_name: &'static str,
     pub screen_w: f32,
