@@ -31,7 +31,7 @@ fn main() -> Result<()> {
     println!("[RiliS] 找进程: {}", cfg.process_name);
     let mut process = kernel.process_by_name(cfg.process_name)?;
     let module = process.module_by_name(cfg.process_name)?;
-    let base = module.base();
+    let base = module.base;
     println!("[RiliS] 基址: 0x{:X}", base);
 
     loop {
