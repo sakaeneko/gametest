@@ -1,6 +1,15 @@
+[package]
+name = "delta_esp"
+version = "0.1.0"
+edition = "2021"
+
 [dependencies]
 memflow = "0.2"
 memflow-win32 = "0.2"
-anyhow = "1"
-ini = "0.21"
-clap = { version = "4", features = ["derive"] }
+memflow-kvm = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
