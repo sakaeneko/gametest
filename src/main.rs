@@ -17,12 +17,14 @@ fn main() -> Result<()> {
     let mut inventory = Inventory::scan();
 
     // qemu 连接器 + QMP socket
+    let mut args = ConnectorArgs::default();
+    args.target = Some("unix:/tmp/qmp-win10.sock".into());
     let connector = inventory.instantiate_connector(
         "qemu",
-        Some("unix:/tmp/qmp-win10.sock"),
         None,
+        Some(&args),
     )?;
-    println!("[RiliS] 线已接 (qemu + qmp)");
+    println!("[RiliS] 线已接 (qemu)");
 
     let mut kernel = Win32Kernel::builder(connector)
         .build_default_caches()
