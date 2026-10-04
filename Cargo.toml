@@ -1,5 +1,5 @@
 [package]
-name = "delta_esp"
+name = "coldwire"
 version = "0.1.0"
 edition = "2021"
 
