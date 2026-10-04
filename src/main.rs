@@ -16,31 +16,8 @@ fn main() -> Result<()> {
 
     let mut inventory = Inventory::scan();
 
-    // 诊断：扫到了什么插件
-    println!("[RiliS] connector 插件列表:");
-    for info in inventory.available_connectors() {
-        println!("    {:?}", info);
-    }
-    println!("[RiliS] os 插件列表:");
-    for info in inventory.available_os() {
-        println!("    {:?}", info);
-    }
-
-    // qemu 连接器
-    let connector = inventory.instantiate_connector("qemu", None, None)?;
+    let connector = inventory.instantiate_connector("qemu", Some("win10"), None)?;
     println!("[RiliS] 线已接 (qemu)");
-
-    // --- 物理内存测试 ---
-    let mut phys = connector.clone();
-    match phys.phys_read::<u64>(Address::from(0x1000)) {
-        Ok(data) => println!("[RiliS] 物理读测试 0x1000: 0x{:X}", data),
-        Err(e) => println!("[RiliS] 物理读失败 0x1000: {:?}", e),
-    }
-    match phys.phys_read::<u64>(Address::from(0x0)) {
-        Ok(data) => println!("[RiliS] 物理读测试 0x0: 0x{:X}", data),
-        Err(e) => println!("[RiliS] 物理读失败 0x0: {:?}", e),
-    }
-    // --- 测试结束 ---
 
     let mut kernel = Win32Kernel::builder(connector)
         .build_default_caches()
