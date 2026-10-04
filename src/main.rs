@@ -14,19 +14,23 @@ fn main() -> Result<()> {
     let cfg = Config::default();
     println!("[RiliS] 线上电...");
 
-    // 扫描程序所在目录，加载旁边的 .so
     let mut inventory = Inventory::scan();
-    let connector = inventory.instantiate_connector(
-        "qemu",
-        None,
-        None,
-    )?;
+    println!("[RiliS] 扫到插件:");
+    for info in inventory.available_plugins() {
+        println!("    {:?}", info);
+    }
+
+    // 1. 加载 connector（线）
+    let connector = inventory.instantiate_connector("qemu", None, None)?;
     println!("[RiliS] 线已接 (qemu)");
 
-    let mut kernel = Win32Kernel::builder(connector)
-        .build_default_caches()
-        .build()?;
-    println!("[RiliS] 客户机 OS 层已加载");
+    // 2. 加载 OS 层（win32）
+    let os = inventory.instantiate_os("win32", connector, None)?;
+    println!("[RiliS] OS 层已加载 (win32)");
+
+    // 3. 从 OS 层构建 kernel
+    let mut kernel = Win32Kernel::new(os)?;
+    println!("[RiliS] 客户机 kernel 就绪");
 
     println!("[RiliS] 找进程: {}", cfg.process_name);
     let mut process = kernel.process_by_name(cfg.process_name)?;
