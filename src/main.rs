@@ -16,7 +16,9 @@ fn main() -> Result<()> {
 
     let mut inventory = Inventory::scan();
 
-    let connector = inventory.instantiate_connector("qemu", Some("win10"), None)?;
+    let mut args = ConnectorArgs::default();
+    args.target = Some("win10".into());
+    let connector = inventory.instantiate_connector("qemu", None, Some(&args))?;
     println!("[RiliS] 线已接 (qemu)");
 
     let mut kernel = Win32Kernel::builder(connector)
